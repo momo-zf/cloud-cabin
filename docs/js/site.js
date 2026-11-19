@@ -92,20 +92,51 @@ if (host) {
   };
 
   if (!weakDevice()) {
-    import('./island.js').then(({ mountIsland }) => {
+    const startup = new AbortController();
+    const fadeMs = 900; // matches the island/poster opacity transition
+    let fade = 0;
+    function stopOnInput() {
+      startup.abort();
+      if (fade) {
+        clearTimeout(fade);
+        fade = 0;
+        host.classList.add('live');
+      }
+    }
+    const watchdog = !params.has('force3d');
+    if (watchdog) {
+      const options = { capture: true, passive: true, signal: startup.signal };
+      for (const type of ['pointermove', 'pointerdown', 'touchstart', 'wheel', 'keydown', 'click', 'scroll', 'resize']) {
+        window.addEventListener(type, stopOnInput, options);
+      }
+    }
+    import('./island.js').then(({ mountIsland, WATCHDOG_DEADLINE }) => {
       const [ax, ay] = anchors();
       const isl = mountIsland(host, {
         mode: mode(), anchorX: ax, anchorY: ay,
         zoom: parseFloat(host.dataset.zoom) || 1.3,
-        watchdog: !params.has('force3d'),
+        watchdog, watchdogSignal: startup.signal,
       });
-      host.addEventListener('island:ready', () => host.classList.add('live'), { once: true });
-      host.addEventListener('island:slow', () => { host.classList.remove('live'); setTimeout(() => isl.dispose(), 900); }, { once: true });
-      addEventListener('cc:mode', (e) => isl.setMode(e.detail));
-      addEventListener('resize', () => { const [x, y] = anchors(); isl.setAnchor(x, y); });
-      isl.ready.catch(() => host.classList.remove('live'));
+      const links = new AbortController();
+      const dispose = () => {
+        startup.abort();
+        links.abort();
+        isl.dispose();
+      };
+      if (watchdog) setTimeout(() => startup.abort(), Math.max(0, WATCHDOG_DEADLINE + fadeMs - performance.now()));
+      host.addEventListener('island:ready', () => host.classList.add('live'), { once: true, signal: links.signal });
+      host.addEventListener('island:slow', () => {
+        host.classList.remove('live');
+        fade = setTimeout(() => { fade = 0; dispose(); }, fadeMs);
+      }, { once: true, signal: startup.signal });
+      addEventListener('cc:mode', (e) => isl.setMode(e.detail), { signal: links.signal });
+      addEventListener('resize', () => { const [x, y] = anchors(); isl.setAnchor(x, y); }, { signal: links.signal });
+      isl.ready.catch(() => {
+        host.classList.remove('live');
+        dispose();
+      });
       window.__island = isl;
-    }).catch(() => { /* keep the poster */ });
+    }).catch(() => startup.abort());
   }
 
   // ---------- 4. parallax: the island lags the page a little ----------

@@ -45,6 +45,10 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
 const DRAG_VELOCITY_WINDOW = 80; // ms
 const MAX_INERTIA_SPEED = 16;    // rad/s
 const INERTIA_DECAY = 5;         // per second
+export const WATCHDOG_DEADLINE = 3500; // ms since navigation
+const WATCHDOG_SAMPLE_MS = 750;
+const WATCHDOG_MIN_INTERVALS = 5;
+const WATCHDOG_SLOW_MS = 55;
 
 export function mountIsland(container, opts = {}) {
   const o = Object.assign({
@@ -64,6 +68,7 @@ export function mountIsland(container, opts = {}) {
     still: false,       // poster mode: fixed pose, no float
     maxDpr: 2,
     watchdog: true,     // keep the poster if the first frames before input are too slow
+    watchdogSignal: null,
   }, opts);
 
   if (o.modes) for (const k of Object.keys(o.modes)) Object.assign(MODES[k], o.modes[k]);
@@ -117,7 +122,7 @@ export function mountIsland(container, opts = {}) {
     tilt: 0, tiltTarget: 0,
     ready: false,
     hovered: null,
-    visible: true,
+    visible: !document.hidden,
     raf: 0,
     t0: performance.now(),
     radius: 30, center: new THREE.Vector3(),
@@ -351,7 +356,9 @@ export function mountIsland(container, opts = {}) {
   let pointer = null;            // last pointer pos in container coords
   let drag = null;
   let releasedAt = 0;
-  let watchdogTimes = o.watchdog ? [] : null;
+  let watchdog = o.watchdog && o.float && !o.still && !document.hidden && !o.watchdogSignal?.aborted
+    ? { warmup: 3, lastFrame: 0, elapsed: 0, longest: 0, intervals: [] } : null;
+  const listeners = new AbortController();
 
   function trimSamples(samples, cutoff) {
     // Keep one sample on or before the cutoff to interpolate the start of the window.
@@ -426,12 +433,10 @@ export function mountIsland(container, opts = {}) {
         moved: false, id: e.pointerId, type: e.pointerType,
         samples: [{ time: e.timeStamp, angle: state.rotY }],
       };
-      watchdogTimes = null;
+      watchdog = null;
       state.vel = 0;
-    });
+    }, { signal: listeners.signal });
     window.addEventListener('pointermove', (e) => {
-      const r = container.getBoundingClientRect();
-      pointer = { x: e.clientX - r.left, y: e.clientY - r.top, cx: e.clientX, cy: e.clientY };
       if (drag) {
         if (e.pointerId !== drag.id) return;
         const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
@@ -455,11 +460,14 @@ export function mountIsland(container, opts = {}) {
         return;
       }
       if (e.target !== canvas) { showTip(null); state.hovered = null; canvas.style.cursor = ''; return; }
+      watchdog = null;
+      const r = container.getBoundingClientRect();
+      pointer = { x: e.clientX - r.left, y: e.clientY - r.top };
       const hit = pick(e.clientX, e.clientY);
       state.hovered = hit;
       canvas.style.cursor = hit ? 'pointer' : 'grab';
       showTip(hit, pointer.x, pointer.y);
-    }, { passive: true });
+    }, { passive: true, signal: listeners.signal });
     window.addEventListener('pointerup', (e) => {
       if (!drag || e.pointerId !== drag.id) return;
       const wasDrag = drag.moved;
@@ -467,25 +475,52 @@ export function mountIsland(container, opts = {}) {
       if (wasDrag && !reduceMotion) state.vel = releaseVelocity(releasedAt);
       clearDrag();
       if (!wasDrag) {
+        const r = container.getBoundingClientRect();
+        pointer = { x: e.clientX - r.left, y: e.clientY - r.top };
         const hit = pick(e.clientX, e.clientY);
         activate(hit);
-        if (pointer) showTip(hit, pointer.x, pointer.y);
+        showTip(hit, pointer.x, pointer.y);
       }
       kick();
-    });
+    }, { signal: listeners.signal });
     window.addEventListener('pointercancel', (e) => {
       if (drag && e.pointerId === drag.id) clearDrag();
-    });
-    canvas.addEventListener('pointerleave', () => { if (!drag) { showTip(null); state.hovered = null; } });
+    }, { signal: listeners.signal });
+    canvas.addEventListener('pointerleave', () => { if (!drag) { showTip(null); state.hovered = null; } }, { signal: listeners.signal });
     window.addEventListener('keydown', (e) => {
       if ((e.key === 'e' || e.key === 'E') && state.hovered && !e.metaKey && !e.ctrlKey && !e.altKey) {
         activate(state.hovered);
         if (pointer) showTip(state.hovered, pointer.x, pointer.y);
       }
-    });
+    }, { signal: listeners.signal });
   }
 
   // ---------- loop ----------
+  function sampleIdleFrame(now) {
+    if (!watchdog) return;
+    if (o.watchdogSignal?.aborted || now >= WATCHDOG_DEADLINE || document.hidden) {
+      watchdog = null;
+      return;
+    }
+    const interval = now - watchdog.lastFrame;
+    watchdog.lastFrame = now;
+    if (watchdog.warmup > 0) { watchdog.warmup--; return; }
+
+    watchdog.intervals.push(interval);
+    watchdog.elapsed += interval;
+    watchdog.longest = Math.max(watchdog.longest, interval);
+    if (watchdog.intervals.length >= WATCHDOG_MIN_INTERVALS && watchdog.elapsed >= WATCHDOG_SAMPLE_MS) {
+      const sorted = watchdog.intervals.sort((a, b) => a - b);
+      // Measure throughput across the window, allowing for one isolated stall.
+      const frameMs = (watchdog.elapsed - watchdog.longest) / (sorted.length - 1);
+      watchdog = null;
+      if (frameMs > WATCHDOG_SLOW_MS) {
+        const median = sorted[Math.floor(sorted.length / 2)] / 1000;
+        container.dispatchEvent(new CustomEvent('island:slow', { detail: { median, frameMs } }));
+      }
+    }
+  }
+
   let lastT = performance.now();
   let idleFrames = 0;
   function frame(now) {
@@ -536,15 +571,8 @@ export function mountIsland(container, opts = {}) {
     }
 
     renderer.render(scene, camera);
-    if (watchdogTimes && state.ready) {
-      watchdogTimes.push(raw);
-      if (watchdogTimes.length >= 36) {
-        const sorted = watchdogTimes.slice(6).sort((a, b) => a - b);
-        watchdogTimes = null;
-        const median = sorted[Math.floor(sorted.length / 2)];
-        if (median > 0.055) container.dispatchEvent(new CustomEvent('island:slow', { detail: { median } }));
-      }
-    }
+    // Only consecutive renders of the loaded, idle scene count toward startup.
+    if (state.ready && watchdog) sampleIdleFrame(performance.now());
     if (!state.firstFrame && state.ready) {
       state.firstFrame = true;
       container.dispatchEvent(new CustomEvent('island:ready'));
@@ -556,22 +584,30 @@ export function mountIsland(container, opts = {}) {
     if (!state.raf && state.visible) { lastT = performance.now(); state.raf = requestAnimationFrame(frame); }
   }
 
-  // only run while visible
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver((es) => {
-      state.visible = es[0].isIntersecting && !document.hidden;
-      if (state.visible) kick();
-    }, { threshold: 0 }).observe(container);
+  // A visibility gap ends the startup sample.
+  let inView = true;
+  function syncVisibility() {
+    state.visible = inView && !document.hidden;
+    if (state.visible) { kick(); return; }
+    watchdog = null;
+    if (state.raf) cancelAnimationFrame(state.raf);
+    state.raf = 0;
   }
-  document.addEventListener('visibilitychange', () => { state.visible = !document.hidden; if (state.visible) kick(); });
+  const io = 'IntersectionObserver' in window ? new IntersectionObserver(([entry]) => {
+    inView = entry.isIntersecting;
+    syncVisibility();
+  }, { threshold: 0 }) : null;
+  io?.observe(container);
+  document.addEventListener('visibilitychange', syncVisibility, { signal: listeners.signal });
   const ro = new ResizeObserver(() => layout());
   ro.observe(container);
-
-  ready.then(() => kick());
 
   function dispose() {
     state.visible = false;
     if (state.raf) cancelAnimationFrame(state.raf);
+    state.raf = 0;
+    listeners.abort();
+    io?.disconnect();
     ro.disconnect();
     renderer.dispose();
     canvas.remove();
