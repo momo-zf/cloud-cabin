@@ -94,11 +94,9 @@
   </section>
 
   <section class="film" aria-label="演示视频" data-en-aria-label="Demo">
-    <p class="film-note"><b data-l="zh">演示视频</b><b data-l="en">Demo</b><span data-l="zh">待上传</span><span data-l="en">Not up yet</span></p>
-    <!-- When the video is ready, replace this figure with <video controls poster="img/campfire-night.jpg" src="..."> or an embed. -->
-    <figure class="film-frame" title="演示视频待上传" data-en-title="Demo not up yet">
-      <img src="img/campfire-night.jpg" alt="夜里的篝火。" data-en-alt="A campfire at night." loading="lazy" width="1280" height="720">
-      <span class="play" aria-hidden="true"></span>
+    <p class="film-note"><b data-l="zh">演示视频</b><b data-l="en">Demo</b></p>
+    <figure class="film-frame">
+      <video controls playsinline preload="none" poster="img/campfire-night.jpg" src="video/demo.mp4" width="1280" height="720" aria-label="演示视频" data-en-aria-label="Demo"></video>
     </figure>
   </section>
 
@@ -113,12 +111,35 @@
         <span data-l="zh">测试版，欢迎</span><span data-l="en">Beta. </span><a href="https://github.com/momo-zf/cloud-cabin/issues"><span data-l="zh">反馈问题</span><span data-l="en">Tell us what breaks</span></a><span data-l="zh">。</span><span data-l="en">.</span></p>
     </div>
   </section>
-</main>
 
-<footer class="foot">
-  <p><span data-l="zh">玩家自制模组，与 Nomad Drive 官方无关。</span><span data-l="en">A player-made mod, not affiliated with official Nomad Drive.</span></p>
-  <p><a href="https://github.com/momo-zf/cloud-cabin">GitHub</a> · 1.5.8</p>
-</footer>
+  <!-- 待推出: placeholders only. Copy is fixed: these three words, in Chinese in both languages, no EN twin. -->
+  <section class="soon" id="soon" aria-label="待推出">
+    <ul class="soon-cards">
+      <li class="soon-card">
+        <svg viewBox="0 0 40 40" width="40" height="40" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 33.6c4.4-1.1 8.9-1.3 13.9-.5s9.6.8 14.2-.4"/>
+          <path d="M20.1 33.2c.3-4.6-.4-9.2.1-14.6"/>
+          <path d="M20 24.4c-.9-4.5-4.7-7.4-10.6-7.1.4 5 4.4 7.6 10.6 7.1"/>
+          <path d="M20.2 18.6c.8-5.2 5-8.8 11.4-8.7-.4 5.7-4.9 9-11.4 8.7"/>
+          <path d="M20.3 18.4c2.9-2.6 5.5-4.6 8.4-6.1"/>
+        </svg>
+        <b>种植系统</b>
+        <small>待推出</small>
+      </li>
+      <li class="soon-card">
+        <svg viewBox="0 0 40 40" width="40" height="40" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12.6 20.4c1.8-2.5 4.3-3.9 7.1-4-.6-4.4 2.2-8.2 6.3-8.2 3.6 0 6 2.6 6 5.8 0 2.6-1.4 4.6-3.6 5.6 2.6 2.2 3.6 5.2 3 8.3-1 4.8-5.6 7.6-11.2 7.3-6.4-.4-10.4-4.6-10.2-10.4-1.4-.6-2.4-1.8-2.8-3.4 2 .2 3.7.1 5.4-1"/>
+          <path d="M31.9 12.9l3.5 1.2-3.3 1.4"/>
+          <circle cx="27.3" cy="12.5" r=".9" fill="currentColor" stroke="none"/>
+          <path d="M15.4 25.3c2.2 3 6 3.8 9 1.6"/>
+          <path d="M18 35.2v3M23.2 35.1v3.1M16.5 38.3h3M21.7 38.3h3"/>
+        </svg>
+        <b>养殖系统</b>
+        <small>待推出</small>
+      </li>
+    </ul>
+  </section>
+</main>
 
 <script type="module" src="js/site.js"></script>
 </body>

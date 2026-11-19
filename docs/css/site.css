@@ -37,6 +37,13 @@
   --mono: "IBM Plex Mono", "DM Mono", ui-monospace, Menlo, Consolas, monospace;
   --pad: clamp(20px, 5vw, 72px);
   --main: clamp(0px, 28.3vw, 408px);      /* where the main column starts on desktop */
+  /* spacing scale: s1–s4 between elements, s5 between blocks of a page, s6 between sections */
+  --s1: 8px;
+  --s2: 16px;
+  --s3: 24px;
+  --s4: 40px;
+  --s5: clamp(80px, 10vw, 140px);
+  --s6: clamp(120px, 14vw, 200px);
   --ease: cubic-bezier(.2, .7, .1, 1);
   color-scheme: light;
 }
@@ -80,14 +87,14 @@ p { margin: 0; }
 /* ---------- header ---------- */
 .top {
   position: absolute; z-index: 5; inset: 0 0 auto 0;
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: baseline; justify-content: space-between;   /* the mark, the links, Install and 中 / EN on one baseline */
   padding: 28px var(--pad);
   font-size: 14px; font-family: var(--sans);   /* the header is chrome: the sans in both languages */
 }
 .mark { font: 700 19px/1 var(--sign); letter-spacing: .08em; display: inline-flex; align-items: baseline; gap: 10px; }
 .mark i { font: italic 400 17px/1 var(--latin); letter-spacing: .01em; color: var(--muted); }
 .home .mark { visibility: hidden; }
-.top nav { display: flex; align-items: center; gap: clamp(16px, 2.6vw, 36px); }
+.top nav { display: flex; align-items: baseline; gap: clamp(16px, 2.6vw, 36px); }
 .top nav a:not(.btn) { color: var(--muted); transition: color .2s; }
 .top nav a:not(.btn):hover, .top nav a[aria-current="page"] { color: var(--ink); }
 
@@ -100,7 +107,7 @@ p { margin: 0; }
 }
 .btn:active { transform: translateY(1px); }
 .btn-sm { padding: 8px 14px; font-size: 13px; letter-spacing: .04em; }
-.btn-lg { padding: 18px 26px; font: 500 18px/1 var(--sans); letter-spacing: .04em; }
+.btn-lg { padding: 18px 26px; font: 500 18px/1 var(--sans); letter-spacing: .04em; align-items: baseline; }
 .btn-lg small { font: 400 13px/1 var(--sans); opacity: .7; letter-spacing: 0; }
 /* the quieter neighbour: the same block, drawn in a hairline instead of filled with ink */
 .btn-quiet { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
@@ -108,7 +115,7 @@ p { margin: 0; }
 .btn-quiet[aria-disabled="true"] { color: var(--muted); }
 .btn[aria-disabled="true"] { cursor: default; }
 .btn[aria-disabled="true"]:active { transform: none; }
-.btns { display: flex; flex-wrap: wrap; gap: 12px; }
+.btns { display: flex; flex-wrap: wrap; gap: var(--s2); }
 
 kbd {
   display: inline-block; min-width: 1.7em; padding: 0 .38em;
@@ -180,15 +187,22 @@ html[data-lang="en"] .page > .sign .sign-en {
 .island-tip kbd { background: var(--paper); }
 
 .hero .sign { position: absolute; left: var(--pad); top: clamp(96px, 13vh, 132px); z-index: 2; pointer-events: none; }
+/* one name at a time: 中 shows 云上小屋 alone; EN shows Cloud Cabin alone, at full size, in two lines */
+html:not([data-lang="en"]) .hero .sign-en,
+html[data-lang="en"] .hero .sign-zh { display: none; }
+html[data-lang="en"] .hero .sign-en {
+  writing-mode: horizontal-tb; width: min-content;
+  font-size: clamp(68px, 8.2vw, 118px); line-height: .96; letter-spacing: 0; padding-top: 0; color: var(--ink);
+  margin: -.075em 0 0 -.04em;   /* optical: the ink of C / l starts where the ink of 云 does */
+}
 .hero-foot {
   position: absolute; left: var(--pad); bottom: clamp(40px, 8vh, 76px); z-index: 2;
 }
 .lede { font: 400 clamp(20px, 1.9vw, 26px)/1.6 var(--serif); letter-spacing: .04em; }
-.kind { margin-top: 14px; font-size: 13px; color: var(--muted); letter-spacing: .04em; }
+.kind { margin-top: var(--s2); font-size: 13px; color: var(--muted); letter-spacing: .04em; }
 .hero-tools {
   position: absolute; right: var(--pad); bottom: clamp(40px, 8vh, 76px); z-index: 2;
-  display: flex; align-items: center; gap: 28px;
-  font-size: 13px; color: var(--muted);
+  font-size: 13px; color: var(--muted);   /* a plain line box like .kind's (13px / 1.75, same face): 昼 / 夜 sits on its baseline */
 }
 .daynight, .lang {
   appearance: none; background: none; border: 0; padding: 4px 0; margin: 0; cursor: pointer;
@@ -215,7 +229,7 @@ html[data-lang="en"] .lang .en::after { transform: scaleX(1); }
 /* ---------- strip: five renders, side by side like fence boards ---------- */
 .strip {
   display: flex; gap: 10px;
-  margin: clamp(80px, 11vw, 160px) var(--pad) 0;
+  margin: var(--s5) var(--pad) 0;
   height: clamp(300px, 34vw, 480px);
 }
 .slat {
@@ -243,7 +257,7 @@ html[data-lang="en"] .lang .en::after { transform: scaleX(1); }
 /* ---------- film ---------- */
 .film {
   display: grid; grid-template-columns: var(--main) 1fr; align-items: end;
-  margin: clamp(110px, 14vw, 200px) var(--pad) 0;
+  margin: var(--s6) var(--pad) 0;
 }
 .film-note { padding-bottom: 6px; }
 .film-note b { display: block; font: 400 22px/1.4 var(--serif); letter-spacing: .06em; }
@@ -252,6 +266,7 @@ html[data-lang="en"] .lang .en::after { transform: scaleX(1); }
   position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: #0b0c0e; margin: 0;
 }
 .film-frame img { width: 100%; height: 100%; object-fit: cover; opacity: .82; }
+.film-frame video { display: block; width: 100%; height: 100%; object-fit: contain; background: #000; }
 .film-frame .play {
   position: absolute; left: 50%; top: 50%; width: 76px; height: 76px; margin: -38px 0 0 -38px;
   border: 1px solid rgba(255, 244, 228, .55); border-radius: 50%;
@@ -263,11 +278,11 @@ html[data-lang="en"] .lang .en::after { transform: scaleX(1); }
 
 /* ---------- get it ---------- */
 .get {
-  margin: clamp(120px, 15vw, 220px) var(--pad) 0;
+  margin: var(--s6) var(--pad) 0;
   display: grid; grid-template-columns: var(--main) 1fr;
 }
 .get-line { grid-column: 2; font: 700 clamp(40px, 5.2vw, 76px)/1.15 var(--sign); letter-spacing: .04em; }
-.get-act { grid-column: 2; margin-top: 44px; display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
+.get-act { grid-column: 2; margin-top: var(--s4); display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; }
 .get-meta { font-size: 13px; color: var(--muted); }
 html[data-lang="en"] .get-line,
 html[data-lang="en"] .steps .w { font-family: var(--serif); font-weight: 400; letter-spacing: 0; }
@@ -279,14 +294,23 @@ html[data-lang="en"] .log h2 { letter-spacing: .01em; }
 .get-meta a:hover,
 .install-meta a:hover { color: var(--ink); border-color: var(--ink); }
 
-/* ---------- footer ---------- */
-.foot {
-  margin: clamp(120px, 14vw, 200px) var(--pad) 0;
-  padding: 26px 0 40px; border-top: 1px solid var(--line);
-  display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap;
-  font-size: 12.5px; color: var(--muted);
+/* ---------- 待推出: two placeholders in the main column, drawn in the hairline of .btn-quiet ---------- */
+.soon {
+  margin: var(--s6) var(--pad) 0;
+  display: grid; grid-template-columns: var(--main) 1fr;
 }
-.foot a:hover { color: var(--ink); }
+.soon-cards { grid-column: 2; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: var(--s2); }
+.soon-card {
+  display: flex; align-items: baseline; gap: var(--s2);
+  padding: var(--s3);
+  box-shadow: inset 0 0 0 1px var(--line); border-radius: 2px;
+}
+.soon-card svg { flex: none; align-self: center; }
+.soon-card b { font: 400 22px/40px var(--serif); letter-spacing: .06em; }   /* line box = icon height: icon, name and tag share one centre line */
+.soon-card small { margin-left: auto; font: 400 12.5px/1 var(--sans); letter-spacing: .04em; color: var(--muted); }
+
+/* ---------- page end: no footer; the last section keeps one step of the spacing scale below it ---------- */
+body { padding-bottom: var(--s5); }
 
 /* ---------- inner pages: sign on the left, one column on the right ---------- */
 .page {
@@ -297,35 +321,35 @@ html[data-lang="en"] .log h2 { letter-spacing: .01em; }
 .col { min-width: 0; }
 
 /* download */
-.install { display: flex; flex-direction: column; align-items: flex-start; gap: 22px; }
+.install { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s3); }
 .install .btn-lg { padding: 24px 32px; font-size: 21px; }
 .install-say { font-size: 14.5px; color: var(--muted); max-width: 34em; }
 .install-meta { margin-top: -10px; font-size: 12.5px; color: var(--faint); letter-spacing: .04em; }
-.more-note { margin-top: 14px; font-size: 12.5px; color: var(--faint); }
+.more-note { margin-top: var(--s2); font-size: 12.5px; color: var(--faint); }
 .steps {
-  list-style: none; margin: clamp(80px, 9vw, 120px) 0 0; padding: 0;
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px;
+  list-style: none; margin: var(--s5) 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s4);
   border-top: 1px solid var(--line);
 }
-.steps li { padding-top: 26px; }
+.steps li { padding-top: var(--s3); }
 .steps .n { display: block; font: 400 15px/1 var(--serif); color: var(--faint); letter-spacing: .1em; }
-.steps .w { display: block; margin-top: 22px; font: 700 clamp(26px, 2.5vw, 34px)/1.2 var(--sign); letter-spacing: .04em; }
-.steps .s { display: block; margin-top: 16px; font-size: 13.5px; line-height: 1.8; color: var(--muted); max-width: 22em; }
+.steps .w { display: block; margin-top: var(--s2); font: 700 clamp(26px, 2.5vw, 34px)/1.2 var(--sign); letter-spacing: .04em; }
+.steps .s { display: block; margin-top: var(--s2); font-size: 13.5px; line-height: 1.8; color: var(--muted); max-width: 22em; }
 .steps .s q { quotes: "「" "」"; color: var(--ink); }
 html[data-lang="en"] .steps .s q { quotes: "\201C" "\201D"; }
-.more { margin-top: clamp(90px, 10vw, 140px); font-size: 13.5px; color: var(--muted); }
-.more-links { display: flex; flex-wrap: wrap; gap: 10px 32px; margin-top: 12px; }
+.more { margin-top: var(--s5); font-size: 13.5px; color: var(--muted); }
+.more-links { display: flex; flex-wrap: wrap; gap: 10px 32px; margin-top: var(--s2); }
 .more-links a { color: var(--ink); border-bottom: 1px solid var(--line); padding-bottom: 2px; transition: border-color .2s; }
 .more-links a:hover { border-color: var(--ink); }
 .more-links small { color: var(--muted); font-size: 12.5px; margin-left: 6px; }
-details.manual { margin-top: 30px; font-size: 13.5px; color: var(--muted); max-width: 40em; }
+details.manual { margin-top: var(--s4); font-size: 13.5px; color: var(--muted); max-width: 40em; }
 details.manual summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 8px; color: var(--muted); }
 details.manual summary::-webkit-details-marker { display: none; }
 details.manual summary::before { content: "+"; font: 400 15px/1 var(--mono); width: 12px; }
 details.manual[open] summary::before { content: "−"; }
 details.manual ol { margin: 14px 0 0; padding-left: 1.4em; line-height: 2; }
 details.manual code { font: 12.5px var(--mono); color: var(--ink); }
-.arrive { margin: clamp(100px, 11vw, 150px) 0 0; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: end; }
+.arrive { margin: var(--s5) 0 0; display: grid; grid-template-columns: 1fr auto; gap: var(--s3); align-items: end; }
 .arrive img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
 .arrive figcaption { font: 400 18px/1 var(--serif); letter-spacing: .1em; writing-mode: vertical-rl; color: var(--muted); }
 /* English set vertically turns on its side as one line, so ’ turns with the letters instead of standing upright */
@@ -380,18 +404,20 @@ html[data-mode="night"] .thing img {
   .hero .sign-zh, .hero .sign-en { writing-mode: horizontal-tb; }
   .hero .sign-zh { font-size: clamp(52px, 15vw, 92px); }
   .hero .sign-en { padding-top: 0; align-self: flex-end; }
+  html[data-lang="en"] .hero .sign-en { width: auto; font-size: clamp(52px, 15vw, 92px); }
   .island { position: relative; inset: auto; height: 64vw; min-height: 260px; --ax: .5; }
   .hero-foot, .hero-tools { position: static; margin: 0 var(--pad); }
-  .hero-tools { margin-top: 20px; justify-content: space-between; }
+  .hero-tools { margin-top: var(--s2); }
   .strip { height: 380px; overflow-x: auto; scroll-snap-type: x mandatory; }
   .slat, .slat.is-open { flex: 0 0 78%; scroll-snap-align: start; }
   .film, .get, .page { grid-template-columns: 1fr; }
-  .film-note { order: 2; margin-top: 16px; }
+  .film-note { order: 2; margin-top: var(--s2); }
   .get-line, .get-act { grid-column: 1; }
-  .page > .sign { position: static; margin-bottom: 48px; }
+  .soon-cards { grid-template-columns: 1fr; }
+  .page > .sign { position: static; margin-bottom: var(--s4); }
   .page > .sign .sign-zh, .page > .sign .sign-en { writing-mode: horizontal-tb; }
   .page > .sign { flex-direction: row; align-items: baseline; }
-  .steps { grid-template-columns: 1fr; gap: 0; }
+  .steps { grid-template-columns: 1fr; gap: var(--s2); }
   .log > li { grid-template-columns: 1fr; }
   .top { padding-top: 20px; }
   .top nav { gap: 14px; }
@@ -401,7 +427,7 @@ html[data-mode="night"] .thing img {
   .top { flex-wrap: wrap; row-gap: 10px; }
   .top nav { flex: 1 0 100%; }
   .top nav .btn { margin-left: auto; }
-  .top .lang { position: absolute; top: 20px; right: var(--pad); }
+  .top .lang { position: absolute; top: 22px; right: var(--pad); }   /* 22px: 中 / EN on the mark's baseline */
 }
 
 @media (prefers-reduced-motion: reduce) {
