@@ -42,6 +42,9 @@ const LABELS = {
 };
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const DRAG_VELOCITY_WINDOW = 80; // ms
+const MAX_INERTIA_SPEED = 16;    // rad/s
+const INERTIA_DECAY = 5;         // per second
 
 export function mountIsland(container, opts = {}) {
   const o = Object.assign({
@@ -60,7 +63,7 @@ export function mountIsland(container, opts = {}) {
     shadows: true,
     still: false,       // poster mode: fixed pose, no float
     maxDpr: 2,
-    watchdog: true,     // if the first frames are too slow, give up and let the page keep the poster
+    watchdog: true,     // keep the poster if the first frames before input are too slow
   }, opts);
 
   if (o.modes) for (const k of Object.keys(o.modes)) Object.assign(MODES[k], o.modes[k]);
@@ -110,7 +113,7 @@ export function mountIsland(container, opts = {}) {
     k: o.mode === 'night' ? 1 : 0,     // 0 = day, 1 = night (animated)
     kTarget: o.mode === 'night' ? 1 : 0,
     lightsOn: true,
-    rotY: 0, rotYTarget: 0, vel: 0,
+    rotY: 0, vel: 0,
     tilt: 0, tiltTarget: 0,
     ready: false,
     hovered: null,
@@ -316,10 +319,19 @@ export function mountIsland(container, opts = {}) {
 
   // ---------- layout ----------
   const viewDir = new THREE.Vector3();
+  let width = 0, height = 0;
   function layout() {
     const w = container.clientWidth || 1, h = container.clientHeight || 1;
-    renderer.setSize(w, h, false);
-    camera.aspect = w / h;
+    if (w !== width || h !== height) {
+      width = w;
+      height = h;
+      renderer.setSize(width, height, false);
+    }
+    updateCamera();
+    kick();
+  }
+
+  function updateCamera() {
     // distance so the island fits the canvas height (layout is height-driven)
     const R = state.radius;
     const fov = THREE.MathUtils.degToRad(camera.fov);
@@ -330,16 +342,39 @@ export function mountIsland(container, opts = {}) {
     camera.lookAt(0, -R * 0.06, 0);
     camera.near = Math.max(1, dist - R * 2.2);
     camera.far = dist + R * 3;
-    camera.setViewOffset(w, h, (0.5 - o.anchorX) * w, (0.5 - o.anchorY) * h, w, h);
-    camera.updateProjectionMatrix();
-    kick();
+    camera.setViewOffset(width, height, (0.5 - o.anchorX) * width, (0.5 - o.anchorY) * height, width, height);
   }
 
   // ---------- pointer ----------
   const ray = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
   let pointer = null;            // last pointer pos in container coords
-  let drag = null;               // {x, y, moved}
+  let drag = null;
+  let releasedAt = 0;
+  let watchdogTimes = o.watchdog ? [] : null;
+
+  function trimSamples(samples, cutoff) {
+    // Keep one sample on or before the cutoff to interpolate the start of the window.
+    while (samples.length > 1 && samples[1].time <= cutoff) samples.shift();
+  }
+
+  function releaseVelocity(time) {
+    const { samples } = drag;
+    const cutoff = time - DRAG_VELOCITY_WINDOW;
+    trimSamples(samples, cutoff);
+    const [first, next] = samples;
+    if (!next) return 0;
+    const start = Math.max(cutoff, first.time);
+    const angle = start === first.time ? first.angle :
+      THREE.MathUtils.lerp(first.angle, next.angle, (start - first.time) / (next.time - first.time));
+    const seconds = Math.max(1, time - start) / 1000;
+    return THREE.MathUtils.clamp((state.rotY - angle) / seconds, -MAX_INERTIA_SPEED, MAX_INERTIA_SPEED);
+  }
+
+  function clearDrag() {
+    drag = null;
+    container.classList.remove('dragging');
+  }
 
   function pick(clientX, clientY) {
     if (!state.ready) return null;
@@ -385,23 +420,34 @@ export function mountIsland(container, opts = {}) {
 
   if (o.interactive) {
     canvas.addEventListener('pointerdown', (e) => {
-      drag = { x: e.clientX, y: e.clientY, sx: e.clientX, moved: false, id: e.pointerId, type: e.pointerType };
+      if (drag || e.button !== 0) return;
+      drag = {
+        x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY,
+        moved: false, id: e.pointerId, type: e.pointerType,
+        samples: [{ time: e.timeStamp, angle: state.rotY }],
+      };
+      watchdogTimes = null;
       state.vel = 0;
     });
     window.addEventListener('pointermove', (e) => {
       const r = container.getBoundingClientRect();
       pointer = { x: e.clientX - r.left, y: e.clientY - r.top, cx: e.clientX, cy: e.clientY };
-      if (drag && e.pointerId === drag.id) {
+      if (drag) {
+        if (e.pointerId !== drag.id) return;
         const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
-        if (!drag.moved && Math.abs(e.clientX - drag.sx) > 5) {
+        const mouse = drag.type === 'mouse';
+        if (!drag.moved && (Math.abs(e.clientX - drag.sx) > 5 || (mouse && Math.abs(e.clientY - drag.sy) > 5))) {
           drag.moved = true;
           try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
           container.classList.add('dragging');
         }
         if (drag.moved) {
-          state.rotYTarget += dx * 0.0062;
-          state.vel = dx * 0.0062;
-          if (drag.type === 'mouse') state.tiltTarget = THREE.MathUtils.clamp(state.tiltTarget + dy * 0.05, -9, 14);
+          state.rotY += dx * 0.0062;
+          if (mouse) state.tiltTarget = THREE.MathUtils.clamp(state.tiltTarget + dy * 0.05, -9, 14);
+        }
+        if (dx || dy) {
+          drag.samples.push({ time: e.timeStamp, angle: state.rotY });
+          trimSamples(drag.samples, e.timeStamp - DRAG_VELOCITY_WINDOW);
         }
         drag.x = e.clientX; drag.y = e.clientY;
         showTip(null);
@@ -417,14 +463,18 @@ export function mountIsland(container, opts = {}) {
     window.addEventListener('pointerup', (e) => {
       if (!drag || e.pointerId !== drag.id) return;
       const wasDrag = drag.moved;
-      drag = null;
-      container.classList.remove('dragging');
+      releasedAt = e.timeStamp;
+      if (wasDrag && !reduceMotion) state.vel = releaseVelocity(releasedAt);
+      clearDrag();
       if (!wasDrag) {
         const hit = pick(e.clientX, e.clientY);
         activate(hit);
         if (pointer) showTip(hit, pointer.x, pointer.y);
       }
       kick();
+    });
+    window.addEventListener('pointercancel', (e) => {
+      if (drag && e.pointerId === drag.id) clearDrag();
     });
     canvas.addEventListener('pointerleave', () => { if (!drag) { showTip(null); state.hovered = null; } });
     window.addEventListener('keydown', (e) => {
@@ -441,23 +491,27 @@ export function mountIsland(container, opts = {}) {
   function frame(now) {
     state.raf = 0;
     const raw = (now - lastT) / 1000;
-    const dt = Math.min(0.05, raw);
-    lastT = now;
+    const dt = Math.max(0, Math.min(0.05, raw));
     let busy = false;
 
     // inertia
-    if (!drag && Math.abs(state.vel) > 0.00005 && !reduceMotion) {
-      state.rotYTarget += state.vel;
-      state.vel *= 0.92;
+    if (state.vel) {
+      const elapsed = Math.max(0, (now - Math.max(lastT, releasedAt)) / 1000);
+      const decay = Math.exp(-INERTIA_DECAY * elapsed);
+      state.rotY += state.vel * (1 - decay) / INERTIA_DECAY;
+      state.vel *= decay;
+      if (Math.abs(state.vel) < 0.003) state.vel = 0;
       busy = true;
     }
-    const ease = 1 - Math.pow(0.0008, dt);
-    const dr = state.rotYTarget - state.rotY;
-    if (Math.abs(dr) > 0.0002) { state.rotY += dr * ease; busy = true; } else state.rotY = state.rotYTarget;
+    lastT = now;
     spin.rotation.y = state.rotY;
 
     const dtl = state.tiltTarget - state.tilt;
-    if (Math.abs(dtl) > 0.01) { state.tilt += dtl * ease; busy = true; layout(); }
+    if (Math.abs(dtl) > 0.01) {
+      state.tilt += dtl * (1 - Math.pow(0.0008, dt));
+      updateCamera();
+      busy = true;
+    }
 
     // day/night
     const dk = state.kTarget - state.k;
@@ -482,11 +536,11 @@ export function mountIsland(container, opts = {}) {
     }
 
     renderer.render(scene, camera);
-    if (o.watchdog && state.ready && !state.judged) {
-      (state.times || (state.times = [])).push(raw);
-      if (state.times.length >= 36) {
-        state.judged = true;
-        const sorted = state.times.slice(6).sort((a, b) => a - b);
+    if (watchdogTimes && state.ready) {
+      watchdogTimes.push(raw);
+      if (watchdogTimes.length >= 36) {
+        const sorted = watchdogTimes.slice(6).sort((a, b) => a - b);
+        watchdogTimes = null;
         const median = sorted[Math.floor(sorted.length / 2)];
         if (median > 0.055) container.dispatchEvent(new CustomEvent('island:slow', { detail: { median } }));
       }
