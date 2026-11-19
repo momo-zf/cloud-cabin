@@ -1,0 +1,50 @@
+# 安装包、运行文件和导出的资源
+*.exe
+*.dll
+*.pdb
+*.so
+*.dylib
+*.msi
+*.zip
+*.7z
+*.rar
+*.blend
+*.blend[0-9]*
+*.fbx
+*.unitypackage
+*.assets
+*.bundle
+*.resS
+
+# Unity、游戏和本地构建目录
+/[Aa]ssets/
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]in/
+/[Bb]uild*/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]ono[Bb]leeding[Ee]dge/
+/*_Data/
+/BepInEx/
+/doorstop_config.ini
+*.log
+
+# 系统和编辑器临时文件
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*~
+
+# 本地凭据与证书
+.env
+.env.*
+.netrc
+secrets.*
+credentials.*
+*.pem
+*.key
+*.pfx
+*.p12

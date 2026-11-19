@@ -1,0 +1,209 @@
+{
+  "tint_targets": {
+    "sheet": {
+      "object": "Bed_Sheet",
+      "material": "bed_sheet",
+      "collider": "Collider_Sheet"
+    },
+    "duvet": {
+      "object": "Bed_Duvet",
+      "material": "bed_duvet",
+      "collider": "Collider_Duvet"
+    },
+    "pillow": {
+      "object": "Bed_Pillow",
+      "material": "bed_pillow",
+      "collider": "Collider_Pillow"
+    }
+  },
+  "physics_collider": "Collider",
+  "frame_object": "Bed_Frame",
+  "frame_material": "bed_wood",
+  "frame_untouched": true,
+  "exported_base_color": "#F7F4EE",
+  "base_note": "Exported GLB/FBX fabric materials are a light neutral/white base (#F7F4EE). At runtime, when the player aims at a part it highlights via its Collider_* ; pressing E cycles ONLY that part by setting its material base color to the next hex in the part's list (or multiplying from the white base). Do not tint bed_wood / Bed_Frame. The 8 'presets' are coordinated whole-bed looks (optional default / apply-all); cycling itself is per-part.",
+  "presets": [
+    {
+      "id": "cream",
+      "name": "奶白",
+      "duvet": "#EFE6D4",
+      "sheet": "#FAF6EE",
+      "pillow": "#FBF8F2"
+    },
+    {
+      "id": "mist_blue",
+      "name": "雾蓝",
+      "duvet": "#8DA3B7",
+      "sheet": "#D5DFE7",
+      "pillow": "#E3EAF0"
+    },
+    {
+      "id": "sage",
+      "name": "鼠尾草绿",
+      "duvet": "#93A68A",
+      "sheet": "#DAE2D1",
+      "pillow": "#E6EBDF"
+    },
+    {
+      "id": "brick",
+      "name": "砖红",
+      "duvet": "#A4483A",
+      "sheet": "#EEDFD3",
+      "pillow": "#F3E8DE"
+    },
+    {
+      "id": "mustard",
+      "name": "芥末黄",
+      "duvet": "#C99A3E",
+      "sheet": "#F2E6C8",
+      "pillow": "#F6EED8"
+    },
+    {
+      "id": "charcoal",
+      "name": "深灰",
+      "duvet": "#4B4E53",
+      "sheet": "#B8BABD",
+      "pillow": "#CDCED1"
+    },
+    {
+      "id": "lavender",
+      "name": "薰衣草紫",
+      "duvet": "#A196B8",
+      "sheet": "#E1DBEA",
+      "pillow": "#ECE7F2"
+    },
+    {
+      "id": "blush",
+      "name": "烟粉",
+      "duvet": "#C6989A",
+      "sheet": "#EEDCDA",
+      "pillow": "#F5E9E7"
+    }
+  ],
+  "sheet": [
+    {
+      "id": "cream",
+      "name": "奶白",
+      "hex": "#FAF6EE"
+    },
+    {
+      "id": "mist_blue",
+      "name": "雾蓝",
+      "hex": "#AFC1CF"
+    },
+    {
+      "id": "sage",
+      "name": "鼠尾草绿",
+      "hex": "#B3C1AA"
+    },
+    {
+      "id": "brick",
+      "name": "砖红",
+      "hex": "#B65E50"
+    },
+    {
+      "id": "mustard",
+      "name": "芥末黄",
+      "hex": "#D6AE5C"
+    },
+    {
+      "id": "charcoal",
+      "name": "深灰",
+      "hex": "#62666B"
+    },
+    {
+      "id": "lavender",
+      "name": "薰衣草紫",
+      "hex": "#BBB1CE"
+    },
+    {
+      "id": "blush",
+      "name": "烟粉",
+      "hex": "#D8B3B3"
+    }
+  ],
+  "duvet": [
+    {
+      "id": "cream",
+      "name": "奶白",
+      "hex": "#EFE6D4"
+    },
+    {
+      "id": "mist_blue",
+      "name": "雾蓝",
+      "hex": "#8DA3B7"
+    },
+    {
+      "id": "sage",
+      "name": "鼠尾草绿",
+      "hex": "#93A68A"
+    },
+    {
+      "id": "brick",
+      "name": "砖红",
+      "hex": "#A4483A"
+    },
+    {
+      "id": "mustard",
+      "name": "芥末黄",
+      "hex": "#C99A3E"
+    },
+    {
+      "id": "charcoal",
+      "name": "深灰",
+      "hex": "#4B4E53"
+    },
+    {
+      "id": "lavender",
+      "name": "薰衣草紫",
+      "hex": "#A196B8"
+    },
+    {
+      "id": "blush",
+      "name": "烟粉",
+      "hex": "#C6989A"
+    }
+  ],
+  "pillow": [
+    {
+      "id": "cream",
+      "name": "奶白",
+      "hex": "#FBF8F2"
+    },
+    {
+      "id": "mist_blue",
+      "name": "雾蓝",
+      "hex": "#BACAD6"
+    },
+    {
+      "id": "sage",
+      "name": "鼠尾草绿",
+      "hex": "#BFCCB7"
+    },
+    {
+      "id": "brick",
+      "name": "砖红",
+      "hex": "#BF6E60"
+    },
+    {
+      "id": "mustard",
+      "name": "芥末黄",
+      "hex": "#DCB86C"
+    },
+    {
+      "id": "charcoal",
+      "name": "深灰",
+      "hex": "#6E7176"
+    },
+    {
+      "id": "lavender",
+      "name": "薰衣草紫",
+      "hex": "#C5BDD6"
+    },
+    {
+      "id": "blush",
+      "name": "烟粉",
+      "hex": "#DFBFBE"
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-CN" data-lang="zh" data-mode="day">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-en="Cloud Cabin · a Nomad Drive mod">云上小屋 Cloud Cabin · Nomad Drive 单机模组</title>
+<meta name="description" content="云上小屋 Cloud Cabin，Nomad Drive 单机模组。">
+<meta property="og:title" content="云上小屋 Cloud Cabin">
+<meta property="og:description" content="云上小屋 Cloud Cabin，Nomad Drive 单机模组。">
+<meta property="og:image" content="img/og.jpg">
+<link rel="icon" href="img/favicon.png">
+<script>
+  // day or night: follows the visitor's clock, like the cabin light (dusk on, dawn off)
+  (function () {
+    var q = new URLSearchParams(location.search).get('mode'), s = null;
+    try { s = sessionStorage.getItem('cc-mode'); } catch (e) {}
+    var h = new Date().getHours();
+    document.documentElement.dataset.mode = q || s || ((h >= 19 || h < 6) ? 'night' : 'day');
+  })();
+</script>
+<script>
+  // 中 or EN: 中 unless the visitor picked EN before (cc-lang). Set before first paint, so nothing flashes.
+  (function () {
+    var q = new URLSearchParams(location.search).get('lang'), s = null;
+    try { s = localStorage.getItem('cc-lang'); } catch (e) {}
+    var l = (q || s) === 'en' ? 'en' : 'zh';
+    document.documentElement.dataset.lang = l;
+    document.documentElement.lang = l === 'en' ? 'en' : 'zh-CN';
+  })();
+</script>
+<link rel="stylesheet" href="css/site.css">
+<script type="importmap">
+{ "imports": {
+    "three": "./vendor/three/build/three.module.js",
+    "three/addons/": "./vendor/three/examples/jsm/"
+} }
+</script>
+</head>
+<body class="home">
+
+<header class="top">
+  <a class="mark" href="index.html">云上小屋<i>Cloud Cabin</i></a>
+  <nav>
+    <a href="index.html" aria-current="page"><span data-l="zh">首页</span><span data-l="en">Home</span></a>
+    <a href="download.html"><span data-l="zh">下载</span><span data-l="en">Download</span></a>
+    <a class="btn btn-sm" href="https://github.com/momo-zf/cloud-cabin/releases/latest/download/CloudCabin-Setup.exe"><span data-l="zh">一键安装</span><span data-l="en">Install</span></a>
+    <button class="lang" type="button" aria-label="English" data-en-aria-label="中文"><span class="zh" lang="zh-CN">中</span><span class="en" lang="en">EN</span></button>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="island" id="island" style="--ax:.6;--ay:.5" data-zoom="1.32">
+      <img class="island-poster" src="img/island-day.webp" data-day="img/island-day.webp" data-night="img/island-night.webp"
+           width="3200" height="1800" alt="悬空岛上的一间木屋，院子围着栅栏。"
+           data-en-alt="A cabin on a floating island, with a fenced yard.">
+    </div>
+
+    <h1 class="sign"><span class="sign-zh">云上小屋</span><span class="sign-en">Cloud Cabin</span></h1>
+
+    <div class="hero-foot">
+      <p class="kind"><span data-l="zh">Nomad Drive 单机模组</span><span data-l="en">A single-player mod for Nomad Drive</span></p>
+    </div>
+
+    <div class="hero-tools">
+      <button class="daynight" type="button" aria-label="白天或夜晚" data-en-aria-label="Day or night"><span class="d" data-l="zh">昼</span><span class="n" data-l="zh">夜</span><span class="d" data-l="en">Day</span><span class="n" data-l="en">Night</span></button>
+    </div>
+  </section>
+
+  <section class="strip" aria-label="岛上" data-en-aria-label="On the island">
+    <figure class="slat is-open" tabindex="0" style="--pos:38% 50%">
+      <div class="slat-img"><img src="img/gate.jpg" alt="院门开着，石子路通到木屋门口。" data-en-alt="The gate is open; a gravel path runs to the cabin door." loading="lazy" width="1280" height="720"></div>
+      <figcaption><span data-l="zh">院门</span><span data-l="en">Gate</span></figcaption>
+    </figure>
+    <figure class="slat" tabindex="0" style="--pos:30% 50%">
+      <div class="slat-img"><img src="img/yard.jpg" alt="院子里的树、菜地和野餐桌。" data-en-alt="Trees, a vegetable patch and a picnic table in the yard." loading="lazy" width="1280" height="720"></div>
+      <figcaption><span data-l="zh">院子</span><span data-l="en">Yard</span></figcaption>
+    </figure>
+    <figure class="slat" tabindex="0" style="--pos:28% 50%">
+      <div class="slat-img"><img src="img/interior.jpg" alt="从门口看进木屋，吸顶灯亮着。" data-en-alt="Looking in from the door, the ceiling light on." loading="lazy" width="1280" height="720"></div>
+      <figcaption><span data-l="zh">屋里</span><span data-l="en">Inside</span></figcaption>
+    </figure>
+    <figure class="slat" tabindex="0" style="--pos:50% 45%">
+      <div class="slat-img"><img src="img/night.jpg" alt="夜里的小岛，窗户亮着。" data-en-alt="The island at night, windows lit." loading="lazy" width="1280" height="720"></div>
+      <figcaption><span data-l="zh">夜里</span><span data-l="en">Night</span></figcaption>
+    </figure>
+    <figure class="slat" tabindex="0" style="--pos:52% 50%">
+      <div class="slat-img"><img src="img/underside.jpg" alt="从下面看悬空岛的底部。" data-en-alt="The underside of the island, from below." loading="lazy" width="1280" height="720"></div>
+      <figcaption><span data-l="zh">岛底</span><span data-l="en">Underside</span></figcaption>
+    </figure>
+  </section>
+
+  <section class="film" aria-label="演示视频" data-en-aria-label="Demo">
+    <p class="film-note"><b data-l="zh">演示视频</b><b data-l="en">Demo</b><span data-l="zh">待上传</span><span data-l="en">Not up yet</span></p>
+    <!-- When the video is ready, replace this figure with <video controls poster="img/campfire-night.jpg" src="..."> or an embed. -->
+    <figure class="film-frame" title="演示视频待上传" data-en-title="Demo not up yet">
+      <img src="img/campfire-night.jpg" alt="夜里的篝火。" data-en-alt="A campfire at night." loading="lazy" width="1280" height="720">
+      <span class="play" aria-hidden="true"></span>
+    </figure>
+  </section>
+
+  <section class="get">
+    <p class="get-line"><span data-l="zh">下载。双击。进游戏。</span><span data-l="en">Download. Double-click. Play.</span></p>
+    <div class="get-act">
+      <div class="btns">
+        <a class="btn btn-lg" href="https://github.com/momo-zf/cloud-cabin/releases/latest/download/CloudCabin-Setup.exe"><span data-l="zh">一键安装</span><span data-l="en">Install</span> <small>(Windows)</small></a>
+        <a class="btn btn-lg btn-quiet" href="#" aria-disabled="true"><span data-l="zh">网盘</span><span data-l="en">Cloud Drive</span> <small><span data-l="zh">待上传</span><span data-l="en">Not up yet</span></small></a>
+      </div>
+      <p class="get-meta">1.5.8 <span data-l="zh">测试版</span><span data-l="en">Beta</span> · <a href="download.html#more"><span data-l="zh">其他下载方式</span><span data-l="en">Other downloads</span></a><br>
+        <span data-l="zh">测试版，欢迎</span><span data-l="en">Beta. </span><a href="https://github.com/momo-zf/cloud-cabin/issues"><span data-l="zh">反馈问题</span><span data-l="en">Tell us what breaks</span></a><span data-l="zh">。</span><span data-l="en">.</span></p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <p><span data-l="zh">玩家自制模组，与 Nomad Drive 官方无关。</span><span data-l="en">A player-made mod, not affiliated with official Nomad Drive.</span></p>
+  <p><a href="https://github.com/momo-zf/cloud-cabin">GitHub</a> · 1.5.8</p>
+</footer>
+
+<script type="module" src="js/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN" data-lang="zh" data-mode="day">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-en="Download · Cloud Cabin">下载 · 云上小屋 Cloud Cabin</title>
+<meta name="description" content="下载。双击运行。进游戏。云上小屋 Cloud Cabin，Nomad Drive 单机模组。">
+<meta property="og:title" content="下载 · 云上小屋 Cloud Cabin">
+<meta property="og:image" content="img/og.jpg">
+<link rel="icon" href="img/favicon.png">
+<script>
+  (function () {
+    var q = new URLSearchParams(location.search).get('mode'), s = null;
+    try { s = sessionStorage.getItem('cc-mode'); } catch (e) {}
+    var h = new Date().getHours();
+    document.documentElement.dataset.mode = q || s || ((h >= 19 || h < 6) ? 'night' : 'day');
+  })();
+</script>
+<script>
+  // 中 or EN: 中 unless the visitor picked EN before (cc-lang). Set before first paint, so nothing flashes.
+  (function () {
+    var q = new URLSearchParams(location.search).get('lang'), s = null;
+    try { s = localStorage.getItem('cc-lang'); } catch (e) {}
+    var l = (q || s) === 'en' ? 'en' : 'zh';
+    document.documentElement.dataset.lang = l;
+    document.documentElement.lang = l === 'en' ? 'en' : 'zh-CN';
+  })();
+</script>
+<link rel="stylesheet" href="css/site.css">
+</head>
+<body class="inner">
+
+<header class="top">
+  <a class="mark" href="index.html">云上小屋<i>Cloud Cabin</i></a>
+  <nav>
+    <a href="index.html"><span data-l="zh">首页</span><span data-l="en">Home</span></a>
+    <a href="download.html" aria-current="page"><span data-l="zh">下载</span><span data-l="en">Download</span></a>
+    <a class="btn btn-sm" href="https://github.com/momo-zf/cloud-cabin/releases/latest/download/CloudCabin-Setup.exe"><span data-l="zh">一键安装</span><span data-l="en">Install</span></a>
+    <button class="lang" type="button" aria-label="English" data-en-aria-label="中文"><span class="zh" lang="zh-CN">中</span><span class="en" lang="en">EN</span></button>
+  </nav>
+</header>
+
+<main class="page">
+  <h1 class="sign"><span class="sign-zh" data-l="zh">下载</span><span class="sign-en" data-l="en">Download</span></h1>
+
+  <div class="col">
+    <section class="install" id="install">
+      <!-- 一键安装: the installer on the latest GitHub release of https://github.com/momo-zf/cloud-cabin
+           网盘: when the link is up, put it in href, drop aria-disabled and the 待上传 note. -->
+      <div class="btns">
+        <a class="btn btn-lg" href="https://github.com/momo-zf/cloud-cabin/releases/latest/download/CloudCabin-Setup.exe"><span data-l="zh">一键安装</span><span data-l="en">Install</span> <small>(Windows)</small></a>
+        <a class="btn btn-lg btn-quiet" href="#" aria-disabled="true"><span data-l="zh">网盘</span><span data-l="en">Cloud Drive</span> <small><span data-l="zh">待上传</span><span data-l="en">Not up yet</span></small></a>
+      </div>
+      <p class="install-say"><span data-l="zh">找到 Steam 里的 Nomad Drive，装好 BepInEx 和模组。</span><span data-l="en">Finds Nomad Drive in Steam, then installs BepInEx and the mod.</span></p>
+      <p class="install-meta">1.5.8 <span data-l="zh">测试版</span><span data-l="en">Beta</span><br>
+        <span data-l="zh">测试版，欢迎</span><span data-l="en">Beta. </span><a href="https://github.com/momo-zf/cloud-cabin/issues"><span data-l="zh">反馈问题</span><span data-l="en">Tell us what breaks</span></a><span data-l="zh">。</span><span data-l="en">.</span></p>
+    </section>
+
+    <ol class="steps">
+      <li><span class="n">01</span><span class="w"><span data-l="zh">下载</span><span data-l="en">Download</span></span><span class="s"><span data-l="zh">点上面的按钮。</span><span data-l="en">Use the button above.</span></span></li>
+      <li><span class="n">02</span><span class="w"><span data-l="zh">双击运行</span><span data-l="en">Double-click</span></span><span class="s"><span data-l="zh">Windows 可能提示<q>未知发布者</q>，<br>点<q>更多信息 → 仍要运行</q>。</span><span data-l="en">Windows may say <q>Unknown publisher.</q><br>Click <q>More info → Run anyway.</q></span></span></li>
+      <li><span class="n">03</span><span class="w"><span data-l="zh">进游戏</span><span data-l="en">Play</span></span><span class="s"><span data-l="zh">开单人模式，按 <kbd>B</kbd> 打开手账。</span><span data-l="en">Start single-player, then press <kbd>B</kbd> for the journal.</span></span></li>
+    </ol>
+
+    <section class="more" id="more">
+      <p><span data-l="zh">其他方式</span><span data-l="en">Other ways</span></p>
+      <div class="more-links">
+        <a href="#more" aria-disabled="true">Nexus<small><span data-l="zh">手动安装，需先装 BepInEx</span><span data-l="en">Manual install, needs BepInEx</span></small></a>
+      </div>
+      <p class="more-note"><span data-l="zh">链接待上传。</span><span data-l="en">Link not up yet.</span></p>
+
+      <details class="manual" open>
+        <summary><span data-l="zh">手动安装 zip</span><span data-l="en">Manual zip install</span></summary>
+        <ol>
+          <li><span data-l="zh">装 BepInEx 5 到游戏目录。</span><span data-l="en">Install BepInEx 5 into the game folder.</span></li>
+          <li><span data-l="zh">解压 zip 到游戏目录，保留文件夹。</span><span data-l="en">Unzip into the game folder, keep the folders as they are.</span></li>
+          <li><span data-l="zh">确认有 <code>BepInEx/plugins/CloudCabin</code>，进单人模式，按 <kbd>B</kbd>。</span><span data-l="en">Confirm <code>BepInEx/plugins/CloudCabin</code> is there, start single-player, press <kbd>B</kbd>.</span></li>
+        </ol>
+      </details>
+    </section>
+
+    <figure class="arrive">
+      <img src="img/golden.jpg" alt="傍晚的木屋，院子里亮着一串灯。" data-en-alt="The cabin at dusk, a string of lights on in the yard." loading="lazy" width="1280" height="720">
+      <figcaption><span data-l="zh">到了</span><span data-l="en">You’re there.</span></figcaption>
+    </figure>
+  </div>
+</main>
+
+<footer class="foot">
+  <p><span data-l="zh">玩家自制模组，与 Nomad Drive 官方无关。</span><span data-l="en">A player-made mod, not affiliated with official Nomad Drive.</span></p>
+  <p><a href="https://github.com/momo-zf/cloud-cabin">GitHub</a> · 1.5.8</p>
+</footer>
+
+<script type="module" src="js/site.js"></script>
+</body>
+</html>

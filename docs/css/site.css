@@ -1,0 +1,409 @@
+/* 云上小屋 Cloud Cabin
+   One paper, one ink. The page is the fog the island hangs in.
+   The name is a sign, set vertically. Everything else is small.
+   Night is the only big change: the whole site goes dark and the button turns lamp-coloured. */
+
+@font-face {
+  font-family: "CC Garamond";
+  src: local("EB Garamond Italic"), local("EBGaramond-Italic"), url("../fonts/ebgaramond-italic-sub.woff") format("woff");
+  font-style: italic; font-weight: 400; font-display: swap;
+}
+@font-face {
+  font-family: "CC Garamond";
+  src: local("EB Garamond"), local("EBGaramond-Regular"), url("../fonts/ebgaramond-sub.woff") format("woff");
+  font-style: normal; font-weight: 400; font-display: swap;
+}
+@font-face {
+  /* display subset of Noto Serif CJK SC Bold: only the characters used in signs and big lines */
+  font-family: "CC Sign";
+  src: local("Noto Serif CJK SC Bold"), local("NotoSerifCJKsc-Bold"), url("../fonts/notoserifsc-bold-sub.woff") format("woff");
+  font-weight: 700; font-display: swap;
+}
+
+:root {
+  --paper: #EEEDE8;
+  --ink: #1D211D;
+  --muted: #6F716A;
+  --faint: #A7A8A0;
+  --line: rgba(29, 33, 29, .16);
+  --btn-bg: #1D211D;
+  --btn-ink: #EEEDE8;
+  --serif-cjk: "Noto Serif CJK SC", "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun";
+  --serif: var(--serif-cjk), serif;
+  --sign: "CC Sign", var(--serif);
+  --sans: "Noto Sans CJK SC", "Noto Sans SC", "Source Han Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --latin: "CC Garamond", "EB Garamond", Georgia, serif;
+  --text: var(--sans);                    /* running text */
+  --mono: "IBM Plex Mono", "DM Mono", ui-monospace, Menlo, Consolas, monospace;
+  --pad: clamp(20px, 5vw, 72px);
+  --main: clamp(0px, 28.3vw, 408px);      /* where the main column starts on desktop */
+  --ease: cubic-bezier(.2, .7, .1, 1);
+  color-scheme: light;
+}
+html[data-mode="night"] {
+  --paper: #1C2433;
+  --ink: #ECE7DC;
+  --muted: #9CA4B6;
+  --faint: #5E6880;
+  --line: rgba(236, 231, 220, .16);
+  --btn-bg: #F0C08C;          /* the colour of a lit window */
+  --btn-ink: #1C2433;
+  color-scheme: dark;
+}
+
+/* 中 by default; EN sits behind the switch in the nav. <html data-lang> is set in <head> before first paint. */
+html:not([data-lang="en"]) [data-l="en"],
+html[data-lang="en"] [data-l="zh"] { display: none !important; }
+/* English takes the site's Latin face (the sign subset only carries the Chinese),
+   running text included: the CJK sans sets ’ “ ” fullwidth, which splits "you’re" in two */
+html[data-lang="en"] {
+  --serif: "CC Garamond", "EB Garamond", Georgia, var(--serif-cjk), serif;
+  --text: var(--serif);
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 15px/1.75 var(--text);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 1.1s ease, color 1.1s ease;
+}
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+p { margin: 0; }
+::selection { background: var(--ink); color: var(--paper); }
+:focus-visible { outline: 1px solid var(--ink); outline-offset: 4px; }
+
+/* ---------- header ---------- */
+.top {
+  position: absolute; z-index: 5; inset: 0 0 auto 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 28px var(--pad);
+  font-size: 14px; font-family: var(--sans);   /* the header is chrome: the sans in both languages */
+}
+.mark { font: 700 19px/1 var(--sign); letter-spacing: .08em; display: inline-flex; align-items: baseline; gap: 10px; }
+.mark i { font: italic 400 17px/1 var(--latin); letter-spacing: .01em; color: var(--muted); }
+.home .mark { visibility: hidden; }
+.top nav { display: flex; align-items: center; gap: clamp(16px, 2.6vw, 36px); }
+.top nav a:not(.btn) { color: var(--muted); transition: color .2s; }
+.top nav a:not(.btn):hover, .top nav a[aria-current="page"] { color: var(--ink); }
+
+/* buttons: a block of ink. no pill, no glow. */
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--btn-bg); color: var(--btn-ink);
+  border-radius: 2px;
+  transition: background-color 1.1s ease, color 1.1s ease, transform .2s var(--ease);
+}
+.btn:active { transform: translateY(1px); }
+.btn-sm { padding: 8px 14px; font-size: 13px; letter-spacing: .04em; }
+.btn-lg { padding: 18px 26px; font: 500 18px/1 var(--sans); letter-spacing: .04em; }
+.btn-lg small { font: 400 13px/1 var(--sans); opacity: .7; letter-spacing: 0; }
+/* the quieter neighbour: the same block, drawn in a hairline instead of filled with ink */
+.btn-quiet { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
+.btn-quiet:not([aria-disabled="true"]):hover { box-shadow: inset 0 0 0 1px var(--ink); }
+.btn-quiet[aria-disabled="true"] { color: var(--muted); }
+.btn[aria-disabled="true"] { cursor: default; }
+.btn[aria-disabled="true"]:active { transform: none; }
+.btns { display: flex; flex-wrap: wrap; gap: 12px; }
+
+kbd {
+  display: inline-block; min-width: 1.7em; padding: 0 .38em;
+  border: 1px solid currentColor; border-bottom-width: 2px; border-radius: 3px;
+  font: 500 .78em/1.45 var(--mono); text-align: center;
+  vertical-align: .08em;
+}
+
+/* ---------- the sign ---------- */
+.sign {
+  margin: 0; display: flex; align-items: flex-start; gap: clamp(8px, 1vw, 14px);
+  font-weight: 400;
+}
+.sign-zh {
+  writing-mode: vertical-rl;
+  font: 700 var(--sign-size, clamp(76px, 9.6vw, 140px))/1 var(--sign);
+  letter-spacing: .05em;
+}
+.sign-en {
+  writing-mode: vertical-rl;
+  font: italic 400 clamp(19px, 1.9vw, 27px)/1 var(--latin);
+  letter-spacing: .02em;
+  color: var(--muted);
+  padding-top: .15em;
+}
+
+/* English: the page sign is set in the Latin italic, alone, at full size */
+html[data-lang="en"] .page > .sign .sign-en {
+  font: italic 400 var(--sign-size, clamp(76px, 9.6vw, 140px))/1 var(--latin);
+  letter-spacing: 0; color: var(--ink); padding-top: 0;
+}
+
+/* ---------- hero ---------- */
+.hero {
+  position: relative;
+  height: 100vh; height: 100svh;
+  min-height: 640px; max-height: 1100px;
+  overflow: hidden;
+}
+.island {
+  position: absolute; inset: 0;
+  --ax: .6; --ay: .5;
+  touch-action: pan-y;
+  will-change: transform;
+}
+.island-poster {
+  position: absolute; top: calc((var(--ay) - .5) * 100%);
+  height: 100%; width: auto; max-width: none;
+  left: calc(var(--ax) * 100%); transform: translateX(-50%);
+  transition: opacity .9s ease;
+  user-select: none; -webkit-user-drag: none; pointer-events: none;
+}
+.island-canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  opacity: 0; transition: opacity .9s ease;
+  cursor: grab;
+}
+.island.dragging .island-canvas { cursor: grabbing; }
+.island.live .island-canvas { opacity: 1; }
+.island.live .island-poster { opacity: 0; }
+.island-tip {
+  position: absolute; left: 0; top: 0; z-index: 3;
+  display: flex; align-items: center; gap: 7px;
+  font: 13px/1 var(--sans); color: var(--ink);
+  opacity: 0; transition: opacity .15s;
+  pointer-events: none; white-space: nowrap;
+}
+.island-tip.on { opacity: 1; }
+.island-tip kbd { background: var(--paper); }
+
+.hero .sign { position: absolute; left: var(--pad); top: clamp(96px, 13vh, 132px); z-index: 2; pointer-events: none; }
+.hero-foot {
+  position: absolute; left: var(--pad); bottom: clamp(40px, 8vh, 76px); z-index: 2;
+}
+.lede { font: 400 clamp(20px, 1.9vw, 26px)/1.6 var(--serif); letter-spacing: .04em; }
+.kind { margin-top: 14px; font-size: 13px; color: var(--muted); letter-spacing: .04em; }
+.hero-tools {
+  position: absolute; right: var(--pad); bottom: clamp(40px, 8vh, 76px); z-index: 2;
+  display: flex; align-items: center; gap: 28px;
+  font-size: 13px; color: var(--muted);
+}
+.daynight, .lang {
+  appearance: none; background: none; border: 0; padding: 4px 0; margin: 0; cursor: pointer;
+  display: inline-flex; gap: 14px; align-items: center;
+  font: 400 17px/1 var(--serif); color: var(--faint);
+}
+.daynight span, .lang span { position: relative; transition: color .4s; }
+.daynight span::after, .lang span::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -8px; height: 1px; background: currentColor;
+  transform: scaleX(0); transition: transform .4s var(--ease);
+}
+html:not([data-mode="night"]) .daynight .d,
+html[data-mode="night"] .daynight .n,
+html:not([data-lang="en"]) .lang .zh,
+html[data-lang="en"] .lang .en { color: var(--ink); }
+html:not([data-mode="night"]) .daynight .d::after,
+html[data-mode="night"] .daynight .n::after,
+html:not([data-lang="en"]) .lang .zh::after,
+html[data-lang="en"] .lang .en::after { transform: scaleX(1); }
+/* 中 / EN: the same quiet switch, at nav size, in a face that does not change when it is pressed */
+.lang { gap: 11px; font: 400 14px/1 "CC Garamond", "EB Garamond", Georgia, var(--serif-cjk), serif; letter-spacing: .04em; }
+.lang span::after { bottom: -6px; }
+
+/* ---------- strip: five renders, side by side like fence boards ---------- */
+.strip {
+  display: flex; gap: 10px;
+  margin: clamp(80px, 11vw, 160px) var(--pad) 0;
+  height: clamp(300px, 34vw, 480px);
+}
+.slat {
+  position: relative; margin: 0; min-width: 0;
+  flex: 1 1 0;
+  display: flex; flex-direction: column; gap: 14px;
+  transition: flex-grow .8s var(--ease);
+  cursor: pointer; outline: none;
+}
+.slat.is-open { flex-grow: 4.4; cursor: default; }
+.slat-img { position: relative; flex: 1; overflow: hidden; background: #cfcac6; }
+.slat-img img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: var(--pos, 50% 50%);
+  transition: object-position .8s var(--ease), transform 1.6s var(--ease), filter .8s;
+}
+.slat:not(.is-open) .slat-img img { filter: saturate(.75); }
+.slat.is-open .slat-img img { object-position: 50% 50%; }
+.slat figcaption {
+  font: 400 14px/1 var(--serif); letter-spacing: .12em; color: var(--faint);
+  transition: color .4s; white-space: nowrap;
+}
+.slat.is-open figcaption, .slat:focus-visible figcaption { color: var(--ink); }
+
+/* ---------- film ---------- */
+.film {
+  display: grid; grid-template-columns: var(--main) 1fr; align-items: end;
+  margin: clamp(110px, 14vw, 200px) var(--pad) 0;
+}
+.film-note { padding-bottom: 6px; }
+.film-note b { display: block; font: 400 22px/1.4 var(--serif); letter-spacing: .06em; }
+.film-note span { display: block; margin-top: 6px; font-size: 13px; color: var(--muted); }
+.film-frame {
+  position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: #0b0c0e; margin: 0;
+}
+.film-frame img { width: 100%; height: 100%; object-fit: cover; opacity: .82; }
+.film-frame .play {
+  position: absolute; left: 50%; top: 50%; width: 76px; height: 76px; margin: -38px 0 0 -38px;
+  border: 1px solid rgba(255, 244, 228, .55); border-radius: 50%;
+}
+.film-frame .play::after {
+  content: ""; position: absolute; left: 31px; top: 26px;
+  border-left: 18px solid rgba(255, 244, 228, .7); border-top: 11px solid transparent; border-bottom: 11px solid transparent;
+}
+
+/* ---------- get it ---------- */
+.get {
+  margin: clamp(120px, 15vw, 220px) var(--pad) 0;
+  display: grid; grid-template-columns: var(--main) 1fr;
+}
+.get-line { grid-column: 2; font: 700 clamp(40px, 5.2vw, 76px)/1.15 var(--sign); letter-spacing: .04em; }
+.get-act { grid-column: 2; margin-top: 44px; display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
+.get-meta { font-size: 13px; color: var(--muted); }
+html[data-lang="en"] .get-line,
+html[data-lang="en"] .steps .w { font-family: var(--serif); font-weight: 400; letter-spacing: 0; }
+html[data-lang="en"] .lede,
+html[data-lang="en"] .film-note b,
+html[data-lang="en"] .log h2 { letter-spacing: .01em; }
+.get-meta a,
+.install-meta a { border-bottom: 1px solid var(--line); padding-bottom: 2px; transition: border-color .2s, color .2s; }
+.get-meta a:hover,
+.install-meta a:hover { color: var(--ink); border-color: var(--ink); }
+
+/* ---------- footer ---------- */
+.foot {
+  margin: clamp(120px, 14vw, 200px) var(--pad) 0;
+  padding: 26px 0 40px; border-top: 1px solid var(--line);
+  display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+  font-size: 12.5px; color: var(--muted);
+}
+.foot a:hover { color: var(--ink); }
+
+/* ---------- inner pages: sign on the left, one column on the right ---------- */
+.page {
+  display: grid; grid-template-columns: var(--main) 1fr;
+  padding: clamp(120px, 15vh, 156px) var(--pad) 0;
+}
+.page > .sign { --sign-size: clamp(68px, 8.2vw, 118px); position: sticky; top: 120px; align-self: start; }
+.col { min-width: 0; }
+
+/* download */
+.install { display: flex; flex-direction: column; align-items: flex-start; gap: 22px; }
+.install .btn-lg { padding: 24px 32px; font-size: 21px; }
+.install-say { font-size: 14.5px; color: var(--muted); max-width: 34em; }
+.install-meta { margin-top: -10px; font-size: 12.5px; color: var(--faint); letter-spacing: .04em; }
+.more-note { margin-top: 14px; font-size: 12.5px; color: var(--faint); }
+.steps {
+  list-style: none; margin: clamp(80px, 9vw, 120px) 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px;
+  border-top: 1px solid var(--line);
+}
+.steps li { padding-top: 26px; }
+.steps .n { display: block; font: 400 15px/1 var(--serif); color: var(--faint); letter-spacing: .1em; }
+.steps .w { display: block; margin-top: 22px; font: 700 clamp(26px, 2.5vw, 34px)/1.2 var(--sign); letter-spacing: .04em; }
+.steps .s { display: block; margin-top: 16px; font-size: 13.5px; line-height: 1.8; color: var(--muted); max-width: 22em; }
+.steps .s q { quotes: "「" "」"; color: var(--ink); }
+html[data-lang="en"] .steps .s q { quotes: "\201C" "\201D"; }
+.more { margin-top: clamp(90px, 10vw, 140px); font-size: 13.5px; color: var(--muted); }
+.more-links { display: flex; flex-wrap: wrap; gap: 10px 32px; margin-top: 12px; }
+.more-links a { color: var(--ink); border-bottom: 1px solid var(--line); padding-bottom: 2px; transition: border-color .2s; }
+.more-links a:hover { border-color: var(--ink); }
+.more-links small { color: var(--muted); font-size: 12.5px; margin-left: 6px; }
+details.manual { margin-top: 30px; font-size: 13.5px; color: var(--muted); max-width: 40em; }
+details.manual summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 8px; color: var(--muted); }
+details.manual summary::-webkit-details-marker { display: none; }
+details.manual summary::before { content: "+"; font: 400 15px/1 var(--mono); width: 12px; }
+details.manual[open] summary::before { content: "−"; }
+details.manual ol { margin: 14px 0 0; padding-left: 1.4em; line-height: 2; }
+details.manual code { font: 12.5px var(--mono); color: var(--ink); }
+.arrive { margin: clamp(100px, 11vw, 150px) 0 0; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: end; }
+.arrive img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.arrive figcaption { font: 400 18px/1 var(--serif); letter-spacing: .1em; writing-mode: vertical-rl; color: var(--muted); }
+/* English set vertically turns on its side as one line, so ’ turns with the letters instead of standing upright */
+html[data-lang="en"] .arrive figcaption { text-orientation: sideways; }
+
+/* changelog */
+.ver { display: flex; align-items: baseline; gap: 18px; }
+.ver b { font: italic 400 clamp(64px, 7vw, 104px)/.9 var(--latin); letter-spacing: -.01em; }
+.ver span { font-size: 13px; color: var(--muted); }
+.log { list-style: none; margin: clamp(70px, 8vw, 110px) 0 0; padding: 0; }
+.log > li {
+  display: grid; grid-template-columns: minmax(0, 1fr) clamp(220px, 23vw, 330px); gap: 40px;
+  padding: 30px 0 32px; border-top: 1px solid var(--line);
+}
+.log > li:last-child { border-bottom: 1px solid var(--line); }
+.log h2 { margin: 0; font: 400 clamp(23px, 2.1vw, 30px)/1.35 var(--serif); letter-spacing: .03em; }
+.log h2 kbd { font-size: .62em; vertical-align: .25em; margin: 0 .15em; }
+.log p { margin-top: 10px; font-size: 13.5px; color: var(--muted); max-width: 36em; }
+.log p kbd { font-size: .85em; }
+.log figure { margin: 0; }
+.log .aside { padding-top: 8px; }
+
+/* marginal objects on the changelog: they sit on the paper, no frames */
+.thing { position: relative; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+.thing img {
+  width: 100%; height: auto;
+  /* soften only the edges of the render, so the object sits on the paper */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent),
+                      linear-gradient(to bottom, transparent, #000 3%, #000 93%, transparent);
+  -webkit-mask-composite: source-in;
+          mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent),
+                      linear-gradient(to bottom, transparent, #000 3%, #000 93%, transparent);
+          mask-composite: intersect;
+}
+html[data-mode="night"] .thing img {
+  filter: brightness(.86);
+  /* at night the light renders fall off like a lamp pool instead of sitting in a grey box */
+  -webkit-mask-image: radial-gradient(ellipse 54% 58% at 50% 50%, #000 48%, transparent 100%);
+          mask-image: radial-gradient(ellipse 54% 58% at 50% 50%, #000 48%, transparent 100%);
+}
+.thing .layer { position: absolute; inset: 0 0 auto 0; transition: opacity .55s ease; }
+.thing figcaption { margin-top: 2px; display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); }
+.thing figcaption b { font: 400 14px/1.5 var(--serif); color: var(--ink); letter-spacing: .08em; }
+.cabinet .layer { opacity: 0; }
+.cabinet.open .layer { opacity: 1; }
+
+/* ---------- small screens ---------- */
+@media (max-width: 860px) {
+  :root { --main: 0px; }
+  .hero { height: auto; min-height: 0; max-height: none; padding: 92px 0 36px; display: flex; flex-direction: column; }
+  .hero .sign { position: relative; top: auto; left: auto; margin: 0 var(--pad); flex-direction: row; }
+  .hero .sign-zh, .hero .sign-en { writing-mode: horizontal-tb; }
+  .hero .sign-zh { font-size: clamp(52px, 15vw, 92px); }
+  .hero .sign-en { padding-top: 0; align-self: flex-end; }
+  .island { position: relative; inset: auto; height: 64vw; min-height: 260px; --ax: .5; }
+  .hero-foot, .hero-tools { position: static; margin: 0 var(--pad); }
+  .hero-tools { margin-top: 20px; justify-content: space-between; }
+  .strip { height: 380px; overflow-x: auto; scroll-snap-type: x mandatory; }
+  .slat, .slat.is-open { flex: 0 0 78%; scroll-snap-align: start; }
+  .film, .get, .page { grid-template-columns: 1fr; }
+  .film-note { order: 2; margin-top: 16px; }
+  .get-line, .get-act { grid-column: 1; }
+  .page > .sign { position: static; margin-bottom: 48px; }
+  .page > .sign .sign-zh, .page > .sign .sign-en { writing-mode: horizontal-tb; }
+  .page > .sign { flex-direction: row; align-items: baseline; }
+  .steps { grid-template-columns: 1fr; gap: 0; }
+  .log > li { grid-template-columns: 1fr; }
+  .top { padding-top: 20px; }
+  .top nav { gap: 14px; }
+}
+@media (max-width: 600px) {
+  /* phones: the name and 中 / EN share the top line, the links sit under them */
+  .top { flex-wrap: wrap; row-gap: 10px; }
+  .top nav { flex: 1 0 100%; }
+  .top nav .btn { margin-left: auto; }
+  .top .lang { position: absolute; top: 20px; right: var(--pad); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: .01ms !important; }
+}
