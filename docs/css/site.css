@@ -308,6 +308,9 @@ html[data-lang="en"] .log h2 { letter-spacing: .01em; }
 .soon-card svg { flex: none; align-self: center; }
 .soon-card b { font: 400 22px/40px var(--serif); letter-spacing: .06em; }   /* line box = icon height: icon, name and tag share one centre line */
 .soon-card small { margin-left: auto; font: 400 12.5px/1 var(--sans); letter-spacing: .04em; color: var(--muted); }
+/* EN: the Latin face at the site's English tracking keeps "Animal Raising" and its tag on one row at 390; the tag never splits */
+html[data-lang="en"] .soon-card b { letter-spacing: .01em; }
+html[data-lang="en"] .soon-card small { white-space: nowrap; }
 
 /* ---------- page end: no footer; the last section keeps one step of the spacing scale below it ---------- */
 body { padding-bottom: var(--s5); }
