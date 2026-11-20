@@ -1,5 +1,6 @@
 {
   "version": "1.5.8",
+  "build": 1,
   "label": "测试版",
   "tested_game_versions": {
     "steam_buildids": [
@@ -12,12 +13,12 @@
     "https://github.com/momo-zf/cloud-cabin/releases/download/v1.5.8/CloudCabin-1.5.8.zip",
     "https://example.com/mirror-placeholder/CloudCabin-1.5.8.zip"
   ],
-  "sha256": "138f862b07bc38b90f3a22d67e759bc22c61f9e44e733bf01d8867a1e39e2f15",
-  "size": 5515493,
+  "sha256": "932355b88a185868f8f47f4916fed52623104b40e41e831ae78e4c5804875aea",
+  "size": 5515504,
   "notes_zh": "云上小屋 1.5.8 测试版，包含悬空岛小家、家具及庭院道具更新。欢迎反馈问题。",
   "setup_urls": [
     "https://momo-zf.github.io/cloud-cabin/download/CloudCabin-Setup-1.5.8.exe"
   ],
-  "setup_sha256": "f7a67f0e3d98fa50a48c21743cf86e0165065b71d70e3a6b4c1300352f13dfd1",
-  "setup_size": 22363136
+  "setup_sha256": "e371b2fb9fba48fc893d9027e87001085f9289ab2dd7064919355abb734e2c6c",
+  "setup_size": 22368256
 }
