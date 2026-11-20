@@ -18,6 +18,6 @@
   "setup_urls": [
     "https://momo-zf.github.io/cloud-cabin/download/CloudCabin-Setup-1.5.8.exe"
   ],
-  "setup_sha256": "eebe5edcb8dc275f99a8c85d372c1736d6d070c0ae3ff50345517097aa71fa0a",
-  "setup_size": 22325248
+  "setup_sha256": "f7a67f0e3d98fa50a48c21743cf86e0165065b71d70e3a6b4c1300352f13dfd1",
+  "setup_size": 22363136
 }
