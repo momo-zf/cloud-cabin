@@ -5,7 +5,7 @@
 ## 推荐：一键安装程序
 
 1. 确认已安装正版 Steam 版 Nomad Drive，并退出游戏。
-2. 安装程序发布后，从本仓库的发布附件下载 `CloudCabin-Setup-*.exe`（1.5.8 版文件名为 `CloudCabin-Setup-1.5.8.exe`）。[GitHub Releases](https://github.com/momo-zf/cloud-cabin/releases)
+2. 从本仓库的发布附件下载 `CloudCabin-Setup.exe`（1.6.0 测试版）。[GitHub Releases](https://github.com/momo-zf/cloud-cabin/releases)
 3. 双击运行。安装程序会查找 Steam 游戏目录，在缺少 BepInEx 时安装官方版本，然后安装云上小屋。
 4. 升级时，退出游戏并运行新版安装程序，即可原地更新并保留存档和设置。
 

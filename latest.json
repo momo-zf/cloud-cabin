@@ -1,5 +1,5 @@
 {
-  "version": "1.5.8",
+  "version": "1.6.0",
   "build": 2,
   "label": "测试版",
   "tested_game_versions": {
@@ -9,16 +9,18 @@
     "assembly_csharp_sha256": "6957f9a1180d811ca2ae1bb44748157d794fed5befd845290fd15e41fb54ffaf"
   },
   "zip_urls": [
-    "https://momo-zf.github.io/cloud-cabin/download/CloudCabin-1.5.8.zip",
-    "https://github.com/momo-zf/cloud-cabin/releases/download/v1.5.8/CloudCabin-1.5.8.zip",
-    "https://example.com/mirror-placeholder/CloudCabin-1.5.8.zip"
+    "https://github.com/momo-zf/cloud-cabin/releases/download/v1.6.0/CloudCabin-1.6.0.zip"
   ],
-  "sha256": "9b0613bd3df20a4af1e688449fd43742826b21ce427afc0aa280d4c6bfc9458f",
-  "size": 5532026,
-  "notes_zh": "云上小屋 1.5.8 测试版，包含悬空岛小家、家具及庭院道具更新。欢迎反馈问题。",
+  "sha256": "0f7f4a2629d83e9e05da8f968857a87070f739af2c4185282062c47d986bb84c",
+  "size": 13120557,
+  "notes": {
+    "zh": "云上小屋 1.6.0 测试版\n· 新增单机牧场：小家旁多了一座牧场岛，有奶牛、鸡、鸭、羊，带棚舍、圈门和木桥，动物白天活动、晚上回棚睡觉\n· 小家家具都能拿起来重新摆放，还加了几件新家具；衣柜、抽屉、床头柜等可以存放东西\n· 新增床头灯和阅读灯，可以拿着走，也能单独开关\n· 手里拿饲料，动物会跟着你走（鸡鸭跟种子，牛羊跟苹果）；对着动物按 N 可以给它起名字\n· 剪羊毛：对着长毛羊按 E，掉下的羊毛能捡、能摆、能收纳，羊毛 6 天长回来\n· 拍照模式：F6 进入或退出，F2 保存高清照片，F3 显示或隐藏名字牌\n· 修复车辆开上牧场步桥、摆放虚影、删除提示和动物在院门卡住等问题",
+    "en": "Cloud Cabin 1.6.0 Beta\n· New single-player ranch: a ranch island next to your home with cows, chickens, ducks and sheep, barns, pen gates and a wooden bridge. Animals roam by day and sleep in their barns at night\n· All home furniture can be picked up and rearranged, plus a few new pieces; wardrobes, drawers and nightstands can store items\n· New bedside lamp and reading lamp you can carry and switch on or off\n· Hold feed and animals follow you (chickens and ducks like seeds, cows and sheep like apples); press N at an animal to name it\n· Sheep shearing: press E at a woolly sheep; the wool can be picked up, placed and stored, and grows back in 6 days\n· Photo mode: F6 to enter or exit, F2 to save a high-res photo, F3 to show or hide name tags\n· Fixed vehicles driving onto the ranch footbridge, placement ghosts, delete prompts and animals getting stuck at the yard gate"
+  },
+  "notes_zh": "云上小屋 1.6.0 测试版\n· 新增单机牧场：小家旁多了一座牧场岛，有奶牛、鸡、鸭、羊，带棚舍、圈门和木桥，动物白天活动、晚上回棚睡觉\n· 小家家具都能拿起来重新摆放，还加了几件新家具；衣柜、抽屉、床头柜等可以存放东西\n· 新增床头灯和阅读灯，可以拿着走，也能单独开关\n· 手里拿饲料，动物会跟着你走（鸡鸭跟种子，牛羊跟苹果）；对着动物按 N 可以给它起名字\n· 剪羊毛：对着长毛羊按 E，掉下的羊毛能捡、能摆、能收纳，羊毛 6 天长回来\n· 拍照模式：F6 进入或退出，F2 保存高清照片，F3 显示或隐藏名字牌\n· 修复车辆开上牧场步桥、摆放虚影、删除提示和动物在院门卡住等问题",
   "setup_urls": [
-    "https://momo-zf.github.io/cloud-cabin/download/CloudCabin-Setup-1.5.8.exe"
+    "https://github.com/momo-zf/cloud-cabin/releases/download/v1.6.0/CloudCabin-Setup.exe"
   ],
-  "setup_sha256": "af02b70a3425641d272516cf5a9b819f5dc92f432da3112b59669f5b8b0f7c14",
-  "setup_size": 22384640
+  "setup_sha256": "24612336b6056c167fa424a209b32d9a7adb1a30b8b44fecbd53ab7eb9098cc7",
+  "setup_size": 29979648
 }
